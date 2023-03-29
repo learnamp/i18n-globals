@@ -96,7 +96,7 @@ module I18n
               if globals.for_locale(locale).key?(missing_key)
                 globals.for_locale(locale)[missing_key]
               else
-                super.call(missing_key, provided_hash, string)
+                super.call(missing_key, provided_hash, string) unless provided_hash[:suppress_missing_interpolation]
               end
             end
           # rubocop:enable Style/ClassVars
@@ -112,7 +112,9 @@ module I18n
       # `missing_interpolation_argument_handler` will not be run at all. That's
       # why we pass in a fake hash so that it always runs interpolation.
       # args << FAKE_INTERPOLATION_HASH unless args.last.is_a?(Hash)
-      super(key, **options.merge(config.globals))
+      options.merge!(config.globals) unless options[:suppress_missing_interpolation]
+
+      super(key, **options.except(:suppress_missing_interpolation))
     end
 
     alias t translate
