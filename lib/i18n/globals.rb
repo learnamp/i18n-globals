@@ -77,7 +77,7 @@ module I18n
     end
 
     def globals
-      @@globals ||= CachedGlobals.new # rubocop:disable Style/ClassVars
+      Thread.current[:i18n_global] ||= CachedGlobals.new # rubocop:disable Style/ClassVars
     end
 
     def globals=(new_globals)

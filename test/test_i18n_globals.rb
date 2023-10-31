@@ -184,5 +184,23 @@ class TestI18nGlobals < Minitest::Test
 
     I18n.config.missing_interpolation_argument_handler = nil
   end
+
+  def test_thread_safe
+    thread_1 = Thread.new do
+      I18n.config.globals[:name] = 'Thread 1'
+
+      sleep(0.1)
+      assert_equal 'Hi there, Thread 1!', I18n.translate('greeting')
+    end
+
+    thread_2 = Thread.new do
+      I18n.config.globals[:name] = 'Thread 2'
+
+      sleep(0.1)
+      assert_equal 'Hi there, Thread 2!', I18n.translate('greeting')
+    end
+
+    [thread_1, thread_2].each(&:join)
+  end
 end
 # rubocop:enable Metrics/ClassLength
